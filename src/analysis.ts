@@ -75,3 +75,8 @@ async function analyseExel(filePath: string) {
 
 //Passing multiple Inputs
 getPathdirectory(["500000 Records.csv", "sample-xls-file-for-testing.xls"]);
+
+export default {
+    analyseCsv,
+    analyseExel
+}
