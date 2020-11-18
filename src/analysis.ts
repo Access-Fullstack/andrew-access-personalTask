@@ -4,7 +4,7 @@ import path from "path";
 import files from "csvtojson";
 import excel from "convert-excel-to-json";
 
-function getPathdirectory(paths: string[]) {
+function getPathdirectory(paths: string[], count: number) {
   const files = paths.map((filePath) => {
     return path.parse(filePath);
   });
@@ -14,30 +14,30 @@ function getPathdirectory(paths: string[]) {
         __dirname,
         `../input/${parsedPath.base}`
       );
-      analyseCsv(filepath);
+      analyseCsv(filepath, count);
     } else if (parsedPath.ext === ".xls" || parsedPath.ext === ".xlsx") {
       const filepath: string = path.join(
         __dirname,
         `../input/${parsedPath.base}`
       );
-      analyseExel(filepath);
+      analyseExel(filepath, count);
     }
   });
 }
 
-async function analyseCsv(filePath: string) {
+async function analyseCsv(filePath: string, count: number) {
   let chunks: string[] = [];
 
   chunks = await files().fromFile(filePath);
 
-  let maxCount: number = 999;
+  let maxCount: number = count;
 
   for (let index: number = 0; index < chunks.length; index++) {
     let batchs: string[];
     batchs = await chunks.slice(index, maxCount);
 
-    index += 999;
-    maxCount += 999;
+    index += count;
+    maxCount += count;
     const outputPath: string = path.join(
       __dirname,
       `../csvOutput/${index}.json`
@@ -48,7 +48,7 @@ async function analyseCsv(filePath: string) {
   }
 }
 
-async function analyseExel(filePath: string) {
+async function analyseExel(filePath: string, count: number) {
   const data = await excel({
     sourceFile: filePath,
     columnToKey: {
@@ -56,13 +56,13 @@ async function analyseExel(filePath: string) {
     },
   });
   let chunks: Record<string, any> = Object.entries(data);
-  let maxCount: number = 999;
+  let maxCount: number = count;
 
   for (let index: number = 0; index < chunks.length; index++) {
     let batchs: string[];
     batchs = await chunks.slice(index, maxCount);
-    index += 999;
-    maxCount += 999;
+    index += count;
+    maxCount += count;
     const outputPath: string = path.join(
       __dirname,
       `../excelOutputs/${index}.json`
@@ -74,7 +74,7 @@ async function analyseExel(filePath: string) {
 }
 
 //Passing multiple Inputs
-getPathdirectory(["500000 Records.csv", "sample-xls-file-for-testing.xls"]);
+getPathdirectory(["500000 Records.csv", "sample-xls-file-for-testing.xls"], 999);
 
 export default {
     analyseCsv,
